@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">PlaceRecognitionApp</string>
-    <string name="welcome_message">Welcome to PlaceRecognitionApp.</string>
+    <string name="welcome_message">Welcome!\nLet\'s start to recognize the place in BB280 area.</string>
     <string name="localization">Start localization...</string>
 </resources>

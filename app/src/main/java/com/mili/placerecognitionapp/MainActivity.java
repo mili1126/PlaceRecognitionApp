@@ -1,12 +1,16 @@
 package com.mili.placerecognitionapp;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivity";
@@ -41,5 +45,17 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "request for permissions");
             ActivityCompat.requestPermissions(this, INITIAL_PERMS, INITIAL_REQUEST);
         }
+
+
+        Button button = (Button) findViewById(R.id.localize_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, CameraActivity.class);
+                startActivity(i);
+            }
+        });
+
+
     }
 }
