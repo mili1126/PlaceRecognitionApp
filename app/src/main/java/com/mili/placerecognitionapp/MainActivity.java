@@ -13,7 +13,7 @@ import android.widget.Button;
 
 
 public class MainActivity extends AppCompatActivity {
-    public static final String TAG = "MainActivity";
+    private static final String TAG = "MainActivity";
 
     /************Permission************/
     private static final String[] INITIAL_PERMS = {
