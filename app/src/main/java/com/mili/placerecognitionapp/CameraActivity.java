@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.Window;
 import android.view.WindowManager;
@@ -167,6 +168,35 @@ public class CameraActivity extends ActionBarActivity
         super.onDestroy();
     }
 
+    // Suppress backward incompatibility errors because we provide
+    // backward-compatible fallbacks (for recreate).
+    @SuppressLint("NewApi")
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        if (mIsMenuLocked) {
+            return true;
+        }
+        if (item.getGroupId() == MENU_GROUP_ID_SIZE) {
+            mImageSizeIndex = item.getItemId();
+            recreate();
+
+            return true;
+        }
+        switch (item.getItemId()) {
+            case R.id.menu_sift:
+                Log.d(TAG, "SIFT clicked");
+                return true;
+            case R.id.menu_surf:
+                Log.d(TAG, "SURF clicked");
+                return true;
+            case R.id.menu_orb:
+                Log.d(TAG, "ORB clicked");
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     public void onCameraViewStarted(final int width,
