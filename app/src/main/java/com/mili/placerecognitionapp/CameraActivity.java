@@ -14,6 +14,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.mili.placerecognitionapp.filters.Filter;
+import com.mili.placerecognitionapp.filters.RecognitionFilter;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -29,14 +30,13 @@ import java.util.List;
 public class CameraActivity extends ActionBarActivity
         implements CameraBridgeViewBase.CvCameraViewListener2 {
     private static final String TAG = "CameraActivity";
-    private static final int FRAME_NUM = 200;
 
     // Keys for storing.
     private static final String STATE_IMAGE_SIZE_INDEX = "imageSizeIndex";
     private static final String STATE_RECOGNITION_FILTER_INDEX = "recognitionFilterIndex";
-    private static int frame_index = 0;
+
     // An ID for items in the image size submenu.
-    private static final int MENU_GROUP_ID_SIZE = 2;
+    private static final int MENU_GROUP_ID_SIZE = 1;
 
     // The camera view.
     private CameraBridgeViewBase mCameraView;
@@ -65,6 +65,24 @@ public class CameraActivity extends ActionBarActivity
                     mCameraView.enableView();
                     //mCameraView.enableFpsMeter();
 
+
+                    //create filters
+                    final Filter siftFilter;
+
+                    final Filter surfFilter;
+
+                    final Filter orbFilter;
+                    try {
+                        orbFilter = new RecognitionFilter(CameraActivity.this, 2);
+                    } catch (IOException e) {
+                        Log.e(TAG, "Failed to create orb recognition");
+                        e.printStackTrace();
+                        break;
+                    }
+
+                    mRecognitionFilters = new Filter[]{
+                            orbFilter
+                    };
                     break;
                 default:
                     super.onManagerConnected(status);
@@ -213,10 +231,8 @@ public class CameraActivity extends ActionBarActivity
 
         // Apply the active filters.
         if (mRecognitionFilters != null) {
-            mRecognitionFilters[mRecognitionFilterIndex].apply(
-                    rgba, rgba);
+            mRecognitionFilters[mRecognitionFilterIndex].apply(rgba, rgba);
         }
-        
 
         return rgba;
     }
