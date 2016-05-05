@@ -42,7 +42,7 @@ public class CameraActivity extends ActionBarActivity
     private CameraBridgeViewBase mCameraView;
 
     // The filter
-    private Filter[] mRecognitionFiles;
+    private Filter[] mRecognitionFilters;
     // The indices of the active filter.
     private int mRecognitionFilterIndex;
 
@@ -210,34 +210,21 @@ public class CameraActivity extends ActionBarActivity
     @Override
     public Mat onCameraFrame(final CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         final Mat rgba = inputFrame.rgba();
-        Log.d(TAG, "frame_index=" +frame_index);
+        Log.d(TAG, "frame_index=" + frame_index);
 
         if (frame_index < FRAME_NUM ) {
             frame_index ++;
         }
         else if (frame_index % 10 == 0) {
             // Apply the active filters.
-//            if (mImageDetectionFilters != null) {
-//                mImageDetectionFilters[mImageDetectionFilterIndex].apply(
-//                        rgba, rgba);
-//            }
-//            if (mCurveFilters != null) {
-//                mCurveFilters[mCurveFilterIndex].apply(rgba, rgba);
-//            }
-//            if (mMixerFilters != null) {
-//                mMixerFilters[mMixerFilterIndex].apply(rgba, rgba);
-//            }
-//            if (mConvolutionFilters != null) {
-//                mConvolutionFilters[mConvolutionFilterIndex].apply(
-//                        rgba, rgba);
-//            }
-
+            if (mRecognitionFilters != null) {
+                mRecognitionFilters[mRecognitionFilterIndex].apply(
+                        rgba, rgba);
+            }
         }
         else if (frame_index == FRAME_NUM ) {
             frame_index = 0;
         }
-
-
 
 
         return rgba;
