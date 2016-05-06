@@ -86,49 +86,7 @@ public class RecognitionFilter implements Filter {
             return;
         }
 
-        for (int i = 1; i < 2; i++) {
-            String filePath = DESCRIPTOR_FOLDERS.get(featureMode) + "/" + i + ".yml";
 
-            int rows = 0;
-            int cols = 0;
-            double[][] array;
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(
-                        new InputStreamReader(mAssets.open(filePath)));
-
-                // do reading, usually loop until end of file reading
-                String mLine;
-                while ((mLine = reader.readLine()) != null) {
-                    //process line
-                    if (mLine.contains("rows")) {
-                        Log.d(TAG, mLine);
-                        rows = Integer.parseInt(mLine.substring(mLine.lastIndexOf(":") + 2));
-                        Log.d(TAG, String.valueOf(rows));
-                    } else if (mLine.contains("cols")) {
-                        Log.d(TAG, mLine);
-                        cols = Integer.parseInt(mLine.substring(mLine.lastIndexOf(":") + 2));
-                        Log.d(TAG, String.valueOf(cols));
-                        array = new double[rows][cols];
-                    } else if (mLine.contains("[")) {
-                        // Start to read in
-                        int row = 0;
-                        int col = 0;
-                        array[row][col] =
-
-                        while (!mLine.contains(";")) {
-
-                        }
-                        Log.d(TAG, mLine);
-
-                    }
-                }
-            } catch (IOException e) {
-                Log.d(TAG, "cannot read in the file");
-            }
-
-
-        }
 
         if (featureMode == 0) {
             //sift

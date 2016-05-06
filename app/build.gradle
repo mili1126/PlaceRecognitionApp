@@ -27,4 +27,6 @@ dependencies {
     compile files('libs/yamlbeans-1.0.jar')
     compile files('libs/javacpp.jar')
     compile files('libs/opencv.jar')
+    compile 'com.github.chrisbanes:PhotoView:1.2.6'
+    compile 'com.android.support:design:23.3.0'
 }

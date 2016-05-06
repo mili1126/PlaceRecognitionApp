@@ -2,9 +2,14 @@ package com.mili.placerecognitionapp;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -12,10 +17,12 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import com.mili.placerecognitionapp.filters.Filter;
 import com.mili.placerecognitionapp.filters.RecognitionFilter;
 
+import org.bytedeco.javacpp.opencv_stitching;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
@@ -27,9 +34,79 @@ import org.opencv.core.Mat;
 import java.io.IOException;
 import java.util.List;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PointF;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+//import android.support.v7.app.AppCompatActivity;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Queue;
+//import org.jgrapht.*;
+
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Stack;
+
+import uk.co.senab.photoview.PhotoViewAttacher;
+//import org.junit.Test;
+//import static org.junit.Assert.assertNotNull;
+//import static org.junit.Assert.assertTrue;
+
+
 public class CameraActivity extends ActionBarActivity
         implements CameraBridgeViewBase.CvCameraViewListener2 {
     private static final String TAG = "CameraActivity";
+
+//    Graph g;
+    Canvas canvas;
+    Paint paint;
+    Bitmap bitmape;
+    Drawable bitmap;
+    Bitmap tempBitmap;
+    private ImageView mImageView;
+    private FloatingActionButton mButton;
+    private PhotoViewAttacher mAttacher;
+
+
+
+
+
+
+
 
     // Keys for storing.
     private static final String STATE_IMAGE_SIZE_INDEX = "imageSizeIndex";
@@ -114,10 +191,35 @@ public class CameraActivity extends ActionBarActivity
         mSupportedImageSizes = parameters.getSupportedPreviewSizes();
         final Camera.Size size = mSupportedImageSizes.get(mImageSizeIndex);
 
-        mCameraView = new JavaCameraView(this, 0);
+//        mCameraView = new JavaCameraView(this, 0);
+        mCameraView = (JavaCameraView) findViewById(R.id.camera_view);
         mCameraView.setMaxFrameSize(size.width, size.height);
         mCameraView.setCvCameraViewListener(this);
-        setContentView(mCameraView);
+
+        mButton = (FloatingActionButton) findViewById(R.id.image_button);
+        mAttacher = new PhotoViewAttacher(mButton);
+
+//        ViewGroup group = new RelativeLayout(this);
+
+
+
+//        mImageView = new ImageView(this);
+//        bitmap = getResources().getDrawable(R.drawable.brown_280_floor_plan);
+//        mImageView.setImageDrawable(bitmap);
+//        mImageView.getLayoutParams().height = 200;
+//        // Attach a PhotoViewAttacher, which takes care of all of the zooming functionality.
+//        mAttacher = new PhotoViewAttacher(mImageView);
+//        group.addView(mImageView);
+//        group.addView(mCameraView);
+//        View mFABView = inflater.inflate(R.layout.activity_camera, , false);
+//        mContainer.addView(mFABView);
+
+//        setContentView(group);
+
+//        JavaCameraView view = (JavaCameraView) findViewById(R.id.camera_view);
+
+
+
     }
 
 
