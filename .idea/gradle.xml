@@ -10,7 +10,6 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/openCVLibrary2411" />
-            <option value="$PROJECT_DIR$/openCVLibrary310" />
           </set>
         </option>
         <option name="myModules">
@@ -18,7 +17,6 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/openCVLibrary2411" />
-            <option value="$PROJECT_DIR$/openCVLibrary310" />
           </set>
         </option>
       </GradleProjectSettings>

@@ -115,15 +115,15 @@ public class RecognitionFilter implements Filter {
 
         if (featureMode == 0) {
             //sift
-            mFeatureDetector = FeatureDetector.create(FeatureDetector.SIFT);
-            mDescriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.SIFT);
-            mDescriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE);
+//            mFeatureDetector = FeatureDetector.create(FeatureDetector.SIFT);
+//            mDescriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.SIFT);
+//            mDescriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE);
 
         } else if (featureMode == 1) {
             //surf
-            mFeatureDetector = FeatureDetector.create(FeatureDetector.SURF);
-            mDescriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.SURF);
-            mDescriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE);
+//            mFeatureDetector = FeatureDetector.create(FeatureDetector.SURF);
+//            mDescriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.SURF);
+//            mDescriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE);
 
         } else if (featureMode == 2) {
             //orb
