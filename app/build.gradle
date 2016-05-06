@@ -25,4 +25,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile project(':openCVLibrary310')
     compile files('libs/yamlbeans-1.0.jar')
+    compile files('libs/javacpp.jar')
+    compile files('libs/opencv.jar')
 }

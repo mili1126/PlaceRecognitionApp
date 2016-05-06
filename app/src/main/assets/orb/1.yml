@@ -1,3 +1,4 @@
+%YAML:1.0
 Mat1: !!opencv-matrix
    rows: 500
    cols: 32
