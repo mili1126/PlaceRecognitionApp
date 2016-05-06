@@ -32,6 +32,7 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 
 import android.app.Activity;
@@ -91,7 +92,7 @@ public class CameraActivity extends ActionBarActivity
         implements CameraBridgeViewBase.CvCameraViewListener2 {
     private static final String TAG = "CameraActivity";
 
-//    Graph g;
+    //    Graph g;
     Canvas canvas;
     Paint paint;
     Bitmap bitmape;
@@ -102,10 +103,7 @@ public class CameraActivity extends ActionBarActivity
     private PhotoViewAttacher mAttacher;
 
 
-
-
-
-
+    private int matchIndex;
 
 
     // Keys for storing.
@@ -145,9 +143,21 @@ public class CameraActivity extends ActionBarActivity
 
                     //create filters
                     final Filter siftFilter;
-
+                    try {
+                        siftFilter = new RecognitionFilter(CameraActivity.this, 0);
+                    } catch (IOException e) {
+                        Log.e(TAG, "Failed to create sift recognition");
+                        e.printStackTrace();
+                        break;
+                    }
                     final Filter surfFilter;
-
+                    try {
+                        surfFilter = new RecognitionFilter(CameraActivity.this, 1);
+                    } catch (IOException e) {
+                        Log.e(TAG, "Failed to create surf recognition");
+                        e.printStackTrace();
+                        break;
+                    }
                     final Filter orbFilter;
                     try {
                         orbFilter = new RecognitionFilter(CameraActivity.this, 2);
@@ -158,6 +168,8 @@ public class CameraActivity extends ActionBarActivity
                     }
 
                     mRecognitionFilters = new Filter[]{
+                            siftFilter,
+                            surfFilter,
                             orbFilter
                     };
                     break;
@@ -191,33 +203,17 @@ public class CameraActivity extends ActionBarActivity
         mSupportedImageSizes = parameters.getSupportedPreviewSizes();
         final Camera.Size size = mSupportedImageSizes.get(mImageSizeIndex);
 
-//        mCameraView = new JavaCameraView(this, 0);
+        //        mCameraView = new JavaCameraView(this, 0);
         mCameraView = (JavaCameraView) findViewById(R.id.camera_view);
         mCameraView.setMaxFrameSize(size.width, size.height);
         mCameraView.setCvCameraViewListener(this);
 
         mButton = (FloatingActionButton) findViewById(R.id.image_button);
+        mButton.setUseCompatPadding(false);
+        mButton.setCompatElevation(.1f);
+        mButton.setBackgroundTintMode(null);
         mAttacher = new PhotoViewAttacher(mButton);
-
-//        ViewGroup group = new RelativeLayout(this);
-
-
-
-//        mImageView = new ImageView(this);
-//        bitmap = getResources().getDrawable(R.drawable.brown_280_floor_plan);
-//        mImageView.setImageDrawable(bitmap);
-//        mImageView.getLayoutParams().height = 200;
-//        // Attach a PhotoViewAttacher, which takes care of all of the zooming functionality.
-//        mAttacher = new PhotoViewAttacher(mImageView);
-//        group.addView(mImageView);
-//        group.addView(mCameraView);
-//        View mFABView = inflater.inflate(R.layout.activity_camera, , false);
-//        mContainer.addView(mFABView);
-
-//        setContentView(group);
-
-//        JavaCameraView view = (JavaCameraView) findViewById(R.id.camera_view);
-
+        mButton.setTranslationY(-100);
 
 
     }
@@ -304,13 +300,16 @@ public class CameraActivity extends ActionBarActivity
         }
         switch (item.getItemId()) {
             case R.id.menu_sift:
+                mRecognitionFilterIndex = 0;
                 Log.d(TAG, "SIFT clicked");
                 return true;
             case R.id.menu_surf:
+                mRecognitionFilterIndex = 1;
                 Log.d(TAG, "SURF clicked");
                 return true;
             case R.id.menu_orb:
                 Log.d(TAG, "ORB clicked");
+                mRecognitionFilterIndex = 2;
                 return true;
 
             default:
@@ -331,9 +330,12 @@ public class CameraActivity extends ActionBarActivity
     public Mat onCameraFrame(final CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         final Mat rgba = inputFrame.rgba();
 
+        Calendar c = Calendar.getInstance();
+        int seconds = c.get(Calendar.SECOND);
         // Apply the active filters.
-        if (mRecognitionFilters != null) {
-            mRecognitionFilters[mRecognitionFilterIndex].apply(rgba, rgba);
+        if ((seconds % 5 == 0) && mRecognitionFilters != null) {
+            Log.d(TAG, "check starts...");
+            matchIndex = mRecognitionFilters[mRecognitionFilterIndex].apply(rgba, rgba);
         }
 
         return rgba;

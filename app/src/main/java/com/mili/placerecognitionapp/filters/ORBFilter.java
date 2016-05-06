@@ -1,25 +1,15 @@
 package com.mili.placerecognitionapp.filters;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
-import android.graphics.Color;
-import android.graphics.PointF;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.mili.placerecognitionapp.MainActivity;
 import com.mili.placerecognitionapp.R;
 
-import org.bytedeco.javacpp.opencv_core;
-import org.bytedeco.javacpp.opencv_core.*;
 import org.opencv.android.Utils;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDMatch;
 import org.opencv.core.MatOfKeyPoint;
-import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
 import org.opencv.features2d.DescriptorExtractor;
 import org.opencv.features2d.DescriptorMatcher;
@@ -27,34 +17,18 @@ import org.opencv.features2d.FeatureDetector;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
- * Created by mili on 5/5/16.
+ * Created by mili on 5/6/16.
  */
-public class RecognitionFilter implements Filter {
+public class ORBFilter implements Filter {
     private final static String TAG = "RecognitionFilter";
     private AssetManager mAssets;
 
-    private List<String> DESCRIPTOR_FOLDERS = Arrays.asList(
-            "sift",
-            "surf",
-            "orb"
-    );
 
     // The reference imgaes;
     private List<Mat> mReferenceImgages = new ArrayList<>();
@@ -74,11 +48,11 @@ public class RecognitionFilter implements Filter {
     private final MatOfDMatch mMatches = new MatOfDMatch();
 
     // A feature detector, which finds features in images.
-    public final FeatureDetector mFeatureDetector;
+    public final FeatureDetector mFeatureDetector = FeatureDetector.create(FeatureDetector.ORB);
     // A descriptor extractor, which creates descriptors of features.
-    public final DescriptorExtractor mDescriptorExtractor;
+    public final DescriptorExtractor mDescriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.ORB);
     // A descriptor matcher, which matches features based on their descriptors.
-    public final DescriptorMatcher mDescriptorMatcher;
+    public final DescriptorMatcher mDescriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMINGLUT);
 
     // The colors.
     private final Scalar mGreenColor = new Scalar(0, 255, 0);
@@ -86,7 +60,7 @@ public class RecognitionFilter implements Filter {
     private final Scalar mRedColor = new Scalar(0, 0, 255);
 
 
-    public RecognitionFilter( Context context, int featureMode) throws IOException {
+    public ORBFilter(Context context, int featureMode) throws IOException {
         // Load the reference orb descriptors
         mAssets = context.getAssets();
         String[] descriptorNames;
@@ -110,28 +84,14 @@ public class RecognitionFilter implements Filter {
         mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame8, Imgcodecs.CV_LOAD_IMAGE_COLOR));
         mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame9, Imgcodecs.CV_LOAD_IMAGE_COLOR));
         mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame10, Imgcodecs.CV_LOAD_IMAGE_COLOR));
-
-        if (featureMode == 0) {
-            //sift
-
-        } else if (featureMode == 1) {
-            //surf
-
-        } else if (featureMode == 2) {
-            //orb
-            mFeatureDetector = FeatureDetector.create(FeatureDetector.ORB);
-            mDescriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.ORB);
-            mDescriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMINGLUT);
-
-            for (int i = 0; i < 10; i++) {
-                MatOfKeyPoint mReferenceKeypoints = new MatOfKeyPoint();
-                Mat mReferenceDescriptor = new Mat();
-                mFeatureDetector.detect(mReferenceImgages.get(i), mReferenceKeypoints);
-                mDescriptorExtractor.compute(mReferenceImgages.get(i), mReferenceKeypoints,
-                        mReferenceDescriptor);
-                mReferenceDescriptors.add(mReferenceDescriptor);
-                Log.d(TAG, String.valueOf(mReferenceDescriptor.rows()));
-            }
+        for (int i = 0; i < 10; i++) {
+            MatOfKeyPoint mReferenceKeypoints = new MatOfKeyPoint();
+            Mat mReferenceDescriptor = new Mat();
+            mFeatureDetector.detect(mReferenceImgages.get(i), mReferenceKeypoints);
+            mDescriptorExtractor.compute(mReferenceImgages.get(i), mReferenceKeypoints,
+                    mReferenceDescriptor);
+            mReferenceDescriptors.add(mReferenceDescriptor);
+            Log.d(TAG, String.valueOf(mReferenceDescriptor.rows()));
         }
 
 
@@ -148,7 +108,6 @@ public class RecognitionFilter implements Filter {
         Log.d(TAG, "\n" + String.valueOf(mReferenceDescriptor.rows()));
 
 
-
         // Detect the scene features, compute their descriptors,
         // and match the scene descriptors to reference descriptors.
         Imgproc.cvtColor(src, src, Imgproc.COLOR_BGR2RGBA);
@@ -162,8 +121,8 @@ public class RecognitionFilter implements Filter {
 
             mDescriptorMatcher.match(mSceneDescriptor,
                     mReferenceDescriptors.get(i), mMatches);
-            int matches =mMatches.toList().size();
-            if ( matches > matchSize) {
+            int matches = mMatches.toList().size();
+            if (matches > matchSize) {
                 matchIndex = i;
                 matchSize = matches;
             }
