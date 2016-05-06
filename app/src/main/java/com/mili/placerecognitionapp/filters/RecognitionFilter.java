@@ -1,6 +1,8 @@
 package com.mili.placerecognitionapp.filters;
 
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.util.Log;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -13,12 +15,22 @@ import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.FeatureDetector;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by mili on 5/5/16.
  */
 public class RecognitionFilter implements Filter {
+    private final static String TAG = "RecognitionFilter";
+    private AssetManager mAssets;
+
+    private List<String> DESCRIPTOR_FOLDERS = Arrays.asList(
+            "sift",
+            "surf",
+            "orb"
+    );
+
     // The reference descriptors.
     private List<Mat> mReferenceDescriptors;
 
@@ -49,6 +61,25 @@ public class RecognitionFilter implements Filter {
 
 
     public RecognitionFilter(final Context context, final int featureMode) throws IOException {
+        // Load the reference orb descriptors
+        mAssets = context.getAssets();
+        String[] descriptorNames;
+        try {
+            descriptorNames = mAssets.list(DESCRIPTOR_FOLDERS.get(featureMode));
+            Log.i(TAG, "Found " + descriptorNames.length + " files");
+        } catch (IOException ioe) {
+            Log.e(TAG, "Could not list assets", ioe);
+            return;
+        }
+        for (int i = 1; i < 2; i++) {
+            String filePath = DESCRIPTOR_FOLDERS.get(featureMode) + "/" + i + ".yml";
+            Log.d(TAG, filePath);
+            YamlMatLoader loader = new YamlMatLoader();
+            mReferenceDescriptors.set(i,  loader.getMatYml(filePath, i));
+            Log.d(TAG, String.valueOf(mReferenceDescriptors.get(i).rows()));
+        }
+
+
         if (featureMode == 0) {
             //sift
 
@@ -58,18 +89,11 @@ public class RecognitionFilter implements Filter {
         } else if (featureMode == 2) {
             //orb
 
-            // Load the reference orb descriptors
 
 
             mFeatureDetector = FeatureDetector.create(FeatureDetector.ORB);
             mDescriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.ORB);
             mDescriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMINGLUT);
-
-            // Detect the reference features and compute their descriptors.
-            mFeatureDetector.detect(referenceImageGray,
-                    mReferenceKeypoints);
-            mDescriptorExtractor.compute(referenceImageGray,
-                    mReferenceKeypoints, mReferenceDescriptors);
         }
 
 
