@@ -1,7 +1,6 @@
 package com.mili.placerecognitionapp;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -17,71 +16,32 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 
 import com.mili.placerecognitionapp.filters.Filter;
-import com.mili.placerecognitionapp.filters.ORBFilter;
 import com.mili.placerecognitionapp.filters.RecognitionFilter;
 
-import org.bytedeco.javacpp.opencv_stitching;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 //import android.support.v7.app.AppCompatActivity;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Queue;
 //import org.jgrapht.*;
 
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.Stack;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 //import org.junit.Test;
@@ -282,7 +242,7 @@ public class CameraActivity extends ActionBarActivity
     @Override
     public void onResume() {
         super.onResume();
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0,
+        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_11,
                 this, mLoaderCallback);
         mIsMenuLocked = false;
     }

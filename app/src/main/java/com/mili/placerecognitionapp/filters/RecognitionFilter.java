@@ -11,7 +11,7 @@ import android.util.Log;
 
 import com.mili.placerecognitionapp.MainActivity;
 import com.mili.placerecognitionapp.R;
-
+import org.opencv.features2d.DMatch;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_core.*;
 import org.bytedeco.javacpp.opencv_xfeatures2d;
@@ -123,7 +123,7 @@ public class RecognitionFilter implements Filter {
             //surf
             mFeatureDetector = FeatureDetector.create(FeatureDetector.SURF);
             mDescriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.SURF);
-            mDescriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.FLANNBASED);
+            mDescriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE);
 
         } else if (featureMode == 2) {
             //orb
@@ -172,8 +172,8 @@ public class RecognitionFilter implements Filter {
             // Calculate the max and min distances between keypoints.
             double maxDist = 0.0;
             double minDist = Double.MAX_VALUE;
-            List<MatOfDMatch> matchesList = mMatches.toList();
-            for (org.opencv.core.DMatch match : matchesList) {
+            List<DMatch> matchesList =  mMatches.toList();
+            for (DMatch match : matchesList) {
                 double dist = match.distance;
                 if (dist < minDist) {
                     minDist = dist;
@@ -197,7 +197,7 @@ public class RecognitionFilter implements Filter {
             // Identify "good" keypoints based on match distance.
             int goodNum = 0;
             double maxGoodMatchDist = 2.0 * minDist;
-            for (final DMatch match : matchesList) {
+            for (DMatch match : matchesList) {
                 if (match.distance < maxGoodMatchDist) {
                     goodNum ++;
                 }
