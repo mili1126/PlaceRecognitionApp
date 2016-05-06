@@ -14,10 +14,11 @@ import com.mili.placerecognitionapp.R;
 
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_core.*;
+import org.bytedeco.javacpp.opencv_xfeatures2d;
 import org.opencv.android.Utils;
 import org.opencv.core.*;
 import org.opencv.core.CvType;
-import org.opencv.core.DMatch;
+//import org.opencv.core.DMatch;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -25,9 +26,9 @@ import org.opencv.features2d.DescriptorExtractor;
 import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.FeatureDetector;
 import org.opencv.features2d.Features2d;
-import org.opencv.imgcodecs.Imgcodecs;
+//import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-
+import org.bytedeco.javacpp.opencv_features2d.Feature2D.*;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -101,22 +102,28 @@ public class RecognitionFilter implements Filter {
 
         // Load the reference image from the app's resources.
         // It is loaded in BGR (blue, green, red) format.
-        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame1, Imgcodecs.CV_LOAD_IMAGE_COLOR));
-        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame2, Imgcodecs.CV_LOAD_IMAGE_COLOR));
-        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame3, Imgcodecs.CV_LOAD_IMAGE_COLOR));
-        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame4, Imgcodecs.CV_LOAD_IMAGE_COLOR));
-        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame5, Imgcodecs.CV_LOAD_IMAGE_COLOR));
-        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame6, Imgcodecs.CV_LOAD_IMAGE_COLOR));
-        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame7, Imgcodecs.CV_LOAD_IMAGE_COLOR));
-        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame8, Imgcodecs.CV_LOAD_IMAGE_COLOR));
-        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame9, Imgcodecs.CV_LOAD_IMAGE_COLOR));
-        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame10, Imgcodecs.CV_LOAD_IMAGE_COLOR));
+        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame1, 1));
+        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame2, 1));
+        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame3, 1));
+        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame4, 1));
+        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame5, 1));
+        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame6, 1));
+        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame7, 1));
+        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame8, 1));
+        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame9, 1));
+        mReferenceImgages.add(Utils.loadResource(context, R.drawable.frame10, 1));
 
         if (featureMode == 0) {
             //sift
+            mFeatureDetector = FeatureDetector.create(FeatureDetector.SIFT);
+            mDescriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.SIFT);
+            mDescriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE);
 
         } else if (featureMode == 1) {
             //surf
+            mFeatureDetector = FeatureDetector.create(FeatureDetector.SURF);
+            mDescriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.SURF);
+            mDescriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.FLANNBASED);
 
         } else if (featureMode == 2) {
             //orb
@@ -124,31 +131,36 @@ public class RecognitionFilter implements Filter {
             mDescriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.ORB);
             mDescriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMINGLUT);
 
-            for (int i = 0; i < 10; i++) {
-                MatOfKeyPoint mReferenceKeypoints = new MatOfKeyPoint();
-                Mat mReferenceDescriptor = new Mat();
-                mFeatureDetector.detect(mReferenceImgages.get(i), mReferenceKeypoints);
-                mDescriptorExtractor.compute(mReferenceImgages.get(i), mReferenceKeypoints,
-                        mReferenceDescriptor);
-                mReferenceDescriptors.add(mReferenceDescriptor);
-                Log.d(TAG, String.valueOf(mReferenceDescriptor.rows()));
-            }
-        }
 
+        }
+        for (int i = 0; i < 10; i++) {
+
+            MatOfKeyPoint mReferenceKeypoints = new MatOfKeyPoint();
+            Mat mReferenceDescriptor = new Mat();
+            Mat referenceImageGray = new Mat();
+            Imgproc.cvtColor(mReferenceImgages.get(i), referenceImageGray,
+                    Imgproc.COLOR_BGR2GRAY);
+            mFeatureDetector.detect(referenceImageGray, mReferenceKeypoints);
+            mDescriptorExtractor.compute(referenceImageGray, mReferenceKeypoints,
+                    mReferenceDescriptor);
+            mReferenceDescriptors.add(mReferenceDescriptor);
+            Log.d(TAG, String.valueOf(mReferenceDescriptor.rows()));
+        }
 
     }
 
     @Override
     public int apply(Mat src, Mat dst) {
+        Mat mGraySrc = new Mat();
+        // Convert the scene to grayscale.
+        Imgproc.cvtColor(src, mGraySrc, Imgproc.COLOR_RGBA2GRAY);
+
         // Detect the scene features, compute their descriptors,
         // and match the scene descriptors to reference descriptors.
-//        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGR2RGB);
-        // Try to create the photo.
-        Imgproc.cvtColor(src, src, Imgproc.COLOR_RGBA2BGR, 3);
-        mFeatureDetector.detect(src, mSceneKeypoints);
-        mDescriptorExtractor.compute(src, mSceneKeypoints,
+        mFeatureDetector.detect(mGraySrc, mSceneKeypoints);
+        mDescriptorExtractor.compute(mGraySrc, mSceneKeypoints,
                 mSceneDescriptor);
-        Features2d.drawKeypoints(src, mSceneKeypoints, dst);
+        Features2d.drawKeypoints(mGraySrc, mSceneKeypoints, dst);
 
         int matchIndex = -1;
         int matchSize = 0;
@@ -160,7 +172,7 @@ public class RecognitionFilter implements Filter {
             // Calculate the max and min distances between keypoints.
             double maxDist = 0.0;
             double minDist = Double.MAX_VALUE;
-            List<DMatch> matchesList = mMatches.toList();
+            List<MatOfDMatch> matchesList = mMatches.toList();
             for (org.opencv.core.DMatch match : matchesList) {
                 double dist = match.distance;
                 if (dist < minDist) {
@@ -171,6 +183,7 @@ public class RecognitionFilter implements Filter {
                 }
             }
 
+            Log.d(TAG, maxDist + " / " + minDist);
             // The thresholds for minDist are chosen subjectively
             // based on testing. The unit is not related to pixel
             // distances; it is related to the number of failed tests
@@ -190,6 +203,7 @@ public class RecognitionFilter implements Filter {
                 }
             }
 
+            Log.d(TAG, i + ": " + goodNum);
 
             if ( goodNum > matchSize) {
                 matchIndex = i;
