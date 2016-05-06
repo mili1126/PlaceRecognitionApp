@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.mili.placerecognitionapp.filters.Filter;
+import com.mili.placerecognitionapp.filters.ORBFilter;
 import com.mili.placerecognitionapp.filters.RecognitionFilter;
 
 import org.bytedeco.javacpp.opencv_stitching;
@@ -124,7 +125,7 @@ public class CameraActivity extends ActionBarActivity
     // The image sizes supported by the active camera.
     private List<Camera.Size> mSupportedImageSizes;
     // The index of the active image size.
-    private int mImageSizeIndex;
+    private int mImageSizeIndex ;
 
     // Whether an asynchronous menu action is in progress.
     // If so, menu interaction should be disabled.
@@ -193,7 +194,7 @@ public class CameraActivity extends ActionBarActivity
             mRecognitionFilterIndex = savedInstanceState.getInt(STATE_RECOGNITION_FILTER_INDEX, 0);
         } else {
             mImageSizeIndex = 0;
-            mRecognitionFilterIndex = 0;
+            mRecognitionFilterIndex = -1;
         }
 
         final Camera camera;
@@ -333,9 +334,10 @@ public class CameraActivity extends ActionBarActivity
         Calendar c = Calendar.getInstance();
         int seconds = c.get(Calendar.SECOND);
         // Apply the active filters.
-        if ((seconds % 5 == 0) && mRecognitionFilters != null) {
-            Log.d(TAG, "check starts...");
+        if ((seconds % 5 == 0) && mRecognitionFilters != null && mRecognitionFilterIndex >= 0) {
+            Log.d(TAG, "check starts..." + mRecognitionFilterIndex);
             matchIndex = mRecognitionFilters[mRecognitionFilterIndex].apply(rgba, rgba);
+            Log.d(TAG, "return match = " + matchIndex);
         }
 
         return rgba;

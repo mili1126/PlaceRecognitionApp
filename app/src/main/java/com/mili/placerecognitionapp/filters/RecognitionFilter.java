@@ -15,15 +15,16 @@ import com.mili.placerecognitionapp.R;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_core.*;
 import org.opencv.android.Utils;
+import org.opencv.core.*;
 import org.opencv.core.CvType;
+import org.opencv.core.DMatch;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfDMatch;
-import org.opencv.core.MatOfKeyPoint;
-import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.features2d.DescriptorExtractor;
 import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.FeatureDetector;
+import org.opencv.features2d.Features2d;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -74,11 +75,11 @@ public class RecognitionFilter implements Filter {
     private final MatOfDMatch mMatches = new MatOfDMatch();
 
     // A feature detector, which finds features in images.
-    public final FeatureDetector mFeatureDetector;
+    public FeatureDetector mFeatureDetector;
     // A descriptor extractor, which creates descriptors of features.
-    public final DescriptorExtractor mDescriptorExtractor;
+    public DescriptorExtractor mDescriptorExtractor;
     // A descriptor matcher, which matches features based on their descriptors.
-    public final DescriptorMatcher mDescriptorMatcher;
+    public DescriptorMatcher mDescriptorMatcher;
 
     // The colors.
     private final Scalar mGreenColor = new Scalar(0, 255, 0);
@@ -139,36 +140,65 @@ public class RecognitionFilter implements Filter {
 
     @Override
     public int apply(Mat src, Mat dst) {
-        MatOfKeyPoint mReferenceKeypoints = new MatOfKeyPoint();
-        Mat mReferenceDescriptor = new Mat();
-        mFeatureDetector.detect(mReferenceImgages.get(7), mReferenceKeypoints);
-        mDescriptorExtractor.compute(mReferenceImgages.get(7), mReferenceKeypoints,
-                mReferenceDescriptor);
-        mReferenceDescriptors.add(mReferenceDescriptor);
-        Log.d(TAG, "\n" + String.valueOf(mReferenceDescriptor.rows()));
-
-
-
         // Detect the scene features, compute their descriptors,
         // and match the scene descriptors to reference descriptors.
-        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGR2RGBA);
+//        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGR2RGB);
+        // Try to create the photo.
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_RGBA2BGR, 3);
         mFeatureDetector.detect(src, mSceneKeypoints);
         mDescriptorExtractor.compute(src, mSceneKeypoints,
                 mSceneDescriptor);
+        Features2d.drawKeypoints(src, mSceneKeypoints, dst);
 
         int matchIndex = -1;
         int matchSize = 0;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10 ; i++) {
 
             mDescriptorMatcher.match(mSceneDescriptor,
                     mReferenceDescriptors.get(i), mMatches);
-            int matches =mMatches.toList().size();
-            if ( matches > matchSize) {
+
+            // Calculate the max and min distances between keypoints.
+            double maxDist = 0.0;
+            double minDist = Double.MAX_VALUE;
+            List<DMatch> matchesList = mMatches.toList();
+            for (org.opencv.core.DMatch match : matchesList) {
+                double dist = match.distance;
+                if (dist < minDist) {
+                    minDist = dist;
+                }
+                if (dist > maxDist) {
+                    maxDist = dist;
+                }
+            }
+
+            // The thresholds for minDist are chosen subjectively
+            // based on testing. The unit is not related to pixel
+            // distances; it is related to the number of failed tests
+            // for similarity between the matched descriptors.
+            if (minDist > 50.0) {
+                // The target is completely lost.
+
+                return -1 ;
+            }
+
+            // Identify "good" keypoints based on match distance.
+            int goodNum = 0;
+            double maxGoodMatchDist = 2.0 * minDist;
+            for (final DMatch match : matchesList) {
+                if (match.distance < maxGoodMatchDist) {
+                    goodNum ++;
+                }
+            }
+
+
+            if ( goodNum > matchSize) {
                 matchIndex = i;
-                matchSize = matches;
+                matchSize = goodNum;
             }
 
         }
+
+
 
         return matchIndex;
     }

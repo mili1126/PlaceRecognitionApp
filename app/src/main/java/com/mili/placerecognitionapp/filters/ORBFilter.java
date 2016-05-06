@@ -29,6 +29,11 @@ public class ORBFilter implements Filter {
     private final static String TAG = "RecognitionFilter";
     private AssetManager mAssets;
 
+    private List<String> DESCRIPTOR_FOLDERS = Arrays.asList(
+            "sift",
+            "surf",
+            "orb"
+    );
 
     // The reference imgaes;
     private List<Mat> mReferenceImgages = new ArrayList<>();
@@ -101,33 +106,34 @@ public class ORBFilter implements Filter {
     public int apply(Mat src, Mat dst) {
         MatOfKeyPoint mReferenceKeypoints = new MatOfKeyPoint();
         Mat mReferenceDescriptor = new Mat();
-        mFeatureDetector.detect(mReferenceImgages.get(7), mReferenceKeypoints);
-        mDescriptorExtractor.compute(mReferenceImgages.get(7), mReferenceKeypoints,
-                mReferenceDescriptor);
-        mReferenceDescriptors.add(mReferenceDescriptor);
-        Log.d(TAG, "\n" + String.valueOf(mReferenceDescriptor.rows()));
-
-
-        // Detect the scene features, compute their descriptors,
-        // and match the scene descriptors to reference descriptors.
-        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGR2RGBA);
-        mFeatureDetector.detect(src, mSceneKeypoints);
-        mDescriptorExtractor.compute(src, mSceneKeypoints,
-                mSceneDescriptor);
+        Log.d(TAG, "\n" + String.valueOf(mReferenceImgages.get(7).rows()));
+//        mFeatureDetector.detect(mReferenceImgages.get(7), mReferenceKeypoints);
+//        mDescriptorExtractor.compute(mReferenceImgages.get(7), mReferenceKeypoints,
+//                mReferenceDescriptor);
+//        mReferenceDescriptors.add(mReferenceDescriptor);
+//        Log.d(TAG, "\n" + String.valueOf(mReferenceDescriptor.rows()));
+//
+//
+//        // Detect the scene features, compute their descriptors,
+//        // and match the scene descriptors to reference descriptors.
+//        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGR2RGBA);
+//        mFeatureDetector.detect(src, mSceneKeypoints);
+//        mDescriptorExtractor.compute(src, mSceneKeypoints,
+//                mSceneDescriptor);
 
         int matchIndex = -1;
         int matchSize = 0;
-        for (int i = 0; i < 10; i++) {
-
-            mDescriptorMatcher.match(mSceneDescriptor,
-                    mReferenceDescriptors.get(i), mMatches);
-            int matches = mMatches.toList().size();
-            if (matches > matchSize) {
-                matchIndex = i;
-                matchSize = matches;
-            }
-
-        }
+//        for (int i = 0; i < 10; i++) {
+//
+//            mDescriptorMatcher.match(mSceneDescriptor,
+//                    mReferenceDescriptors.get(i), mMatches);
+//            int matches = mMatches.toList().size();
+//            if (matches > matchSize) {
+//                matchIndex = i;
+//                matchSize = matches;
+//            }
+//
+//        }
 
         return matchIndex;
     }
