@@ -88,27 +88,8 @@ public class RecognitionFilter implements Filter {
             return;
         }
 
-        //        for (int i = 1; i < 2; i++) {
-        //            String filePath = DESCRIPTOR_FOLDERS.get(featureMode) + "/" + i + ".yml";
-        //            Log.d(TAG, filePath);
-        //            YamlMatLoader loader = new YamlMatLoader();
-        //            mReferenceDescriptors.set(i,  loader.getMatYml(filePath, i));
-        //            Log.d(TAG, String.valueOf(mReferenceDescriptors.get(i).rows()));
-        //        }
         for (int i = 1; i < 2; i++) {
             String filePath = DESCRIPTOR_FOLDERS.get(featureMode) + "/" + i + ".yml";
-            //mAssets.getLocales(filePath);
-            Log.d(TAG, "Path : " + filePath);
-
-            PackageManager m = context.getPackageManager();
-            String s = context.getPackageName();
-            try {
-                PackageInfo p = m.getPackageInfo(s, 0);
-                s = p.applicationInfo.dataDir;
-                Log.d(TAG, s);
-            } catch (PackageManager.NameNotFoundException e) {
-                Log.w(TAG, "Error Package name not found ", e);
-            }
 
             BufferedReader reader = null;
             try {
@@ -128,25 +109,7 @@ public class RecognitionFilter implements Filter {
                 Log.d(TAG, "cannot read in the file");
             }
 
-            filePath = "main/java/com/mili/placerecognitionapp/filters/filter.java";
 
-            File f = new File(filePath);
-            if (f.exists() == true) {
-                Log.e(TAG, "Valid: " + f.getAbsolutePath());
-            } else {
-                Log.e(TAG, "InValid: " + f.getAbsolutePath());
-            }
-//            InputStream in_s1 =   MainActivity.class.getResourceAsStream("/assets/" +filePath);
-////            InputStream is = mAssets.open("terms.txt");
-//            Log.d(TAG, "Path : " + filePath);
-//            FileStorage fs = new FileStorage(filePath, FileStorage.READ);
-//            opencv_core.Mat mat = new opencv_core.Mat();
-//            String matName = "Mat" + i;
-//            opencv_core.FileNode dataNode = new FileNode();
-//            dataNode = fs.get(matName);
-//            opencv_core.read(dataNode, mat);
-//            fs.release();
-//            Log.d(TAG, mat.cols() + " " + mat.rows());
         }
 
         if (featureMode == 0) {
